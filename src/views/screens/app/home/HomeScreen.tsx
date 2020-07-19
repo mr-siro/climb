@@ -1,5 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, FlatList, ActivityIndicator} from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import {Header, Icon, Input, Slider, Button} from 'react-native-elements';
 import {styles} from './HomeStyles';
 import {Colors, Metrics} from '@shared';
@@ -42,12 +49,15 @@ export const HomeScreen = () => {
 
   //handlerSearch
   const handlerSearch = () => {
-    if(jobValue !== '') {
+    if (jobValue !== '') {
       let searchList = [...listJobs];
-    const filteredData = searchList.filter(
-      (item: JobsType) => item.title.match(jobValue) && item.isExpired == false && jobValue !== '',
-    );
-    return filteredData;
+      const filteredData = searchList.filter(
+        (item: JobsType) =>
+          item.title.match(jobValue) &&
+          item.isExpired == false &&
+          jobValue !== '',
+      );
+      return filteredData;
     }
     return listJobs;
   };
@@ -148,19 +158,21 @@ export const HomeScreen = () => {
   };
 
   return (
-    <View style={{backgroundColor: '#ffffff', flex: 1}}>
-      {/*Header*/}
-      <MyHeader
-        title={'Jobs'}
-        leftIcon={'menu'}
-        rightIcon={'ios-notifications-outline'}
-        rightIconType={'ionicon'}
-      />
-      {/*Container*/}
-      <View style={styles.container}>
-        {renderTopContent()}
-        {renderCenterContent()}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={{backgroundColor: '#ffffff', flex: 1}}>
+        {/*Header*/}
+        <MyHeader
+          title={'Jobs'}
+          leftIcon={'menu'}
+          rightIcon={'ios-notifications-outline'}
+          rightIconType={'ionicon'}
+        />
+        {/*Container*/}
+        <View style={styles.container}>
+          {renderTopContent()}
+          {renderCenterContent()}
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
