@@ -21,8 +21,8 @@ export interface SignInProps {
 
 export const SignInScreen = (props: SignInProps) => {
   const {navigation} = props;
-  const [userName, setUserName] = useState(''),
-    [passWord, setPassWord] = useState('');
+  const [userName, setUserName] = useState('contact@abc.com'),
+    [passWord, setPassWord] = useState('ABC@123');
 
   const validForm = () => {
     if (userName !== 'contact@abc.com') {

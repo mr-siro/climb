@@ -63,8 +63,10 @@ export interface InputAuthProps {
 }
 
 export const MyInput = (props: InputAuthProps) => {
+  const ref = React.createRef<Input>();
   return (
     <Input
+      ref={ref}
       leftIcon={<Icon name={props.iconName} size={16} type={props.iconType} />}
       inputContainerStyle={[{borderBottomWidth: 0}, props.inputContainerStyle]}
       containerStyle={[styles.input, props.containerStyle]}
