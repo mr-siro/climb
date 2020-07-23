@@ -19,19 +19,35 @@ export const Card = (props: CardProps) => {
         flexDirection: 'row',
         marginVertical: Metrics.spacing.medium,
         justifyContent: 'space-between',
-        flex:1,
-        alignItems:'center'
+        flex: 1,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 3,
+        },
+        shadowOpacity: 0.27,
+        shadowRadius: 4.65,
+        backgroundColor: 'white',
+        elevation: 6,
+        marginBottom: 10,
+        paddingHorizontal: Metrics.spacing.medium,
       }}>
-      <View style={{paddingLeft: Metrics.spacing.medium, flexGrow:1}}>
+      <View
+        style={{
+          paddingLeft: Metrics.spacing.medium,
+          flexGrow: 1,
+          marginVertical: Metrics.spacing.medium,
+        }}>
         <Image source={{uri: props.imageUrl}} style={{width: 76, height: 76}} />
       </View>
 
-      <View style={{flexGrow:3}}>
-        <Text style={{fontWeight: 'bold', lineHeight:24}}>{props.title}</Text>
-        <Text style={{color: Colors.Text.textAcient,lineHeight:24}}>
+      <View style={{flexGrow: 3}}>
+        <Text style={{fontWeight: 'bold', lineHeight: 24}}>{props.title}</Text>
+        <Text style={{color: Colors.Text.textAcient, lineHeight: 24}}>
           Base Salary: {props.salary}
         </Text>
-        <Text style={{color: Colors.Text.textAcient,lineHeight:24}}>
+        <Text style={{color: Colors.Text.textAcient, lineHeight: 24}}>
           Location: {props.location}
         </Text>
       </View>
@@ -45,7 +61,7 @@ export const Card = (props: CardProps) => {
             borderBottomRightRadius: 0,
             width: 79,
             height: 45,
-            backgroundColor:Colors.Primary
+            backgroundColor: Colors.Primary,
           }}
           disabled={props.disable}
           disabledTitleStyle={{color: Colors.Gray}}

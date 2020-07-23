@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "446080231387",
+    "firebase_url": "https://climb-dbc75.firebaseio.com",
+    "project_id": "climb-dbc75",
+    "storage_bucket": "climb-dbc75.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446080231387:android:4ab84dd3ba4d769b9769fe",
+        "android_client_info": {
+          "package_name": "com.climb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "446080231387-55lng9brne3kkeaja9dglmkrld2hlato.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCg4IojH1mkwjhePOuf4EEIopQpUvvxSQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "446080231387-55lng9brne3kkeaja9dglmkrld2hlato.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

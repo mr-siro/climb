@@ -13,7 +13,6 @@ export const LoadingScreen = () => {
     (await isLogin()) ? homeNavigate() : authNavigate();
   };
   const homeNavigate = () => {
-    console.log('homeNavigate');
     navigation.navigate(AppRoute.HOME);
   };
 
@@ -24,8 +23,12 @@ export const LoadingScreen = () => {
   const isLogin = async () => {
     //Get id from storage. neu co return true nguoc lai returm false
     const value = await AsyncStorage.getItem('@userName');
-    console.log('value', value);
-    if (value) {
+    const ggToken = await AsyncStorage.getItem('@ggToken');
+    const fbToken = await AsyncStorage.getItem('@fbToken');
+    console.log('ggToken is:', ggToken);
+    console.log('value is:', value);
+    console.log('fbToken is:', fbToken);
+    if (value || ggToken || fbToken) {
       return true;
     }
     return false;

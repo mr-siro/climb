@@ -158,7 +158,7 @@ export const HomeScreen = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    
       <View style={{backgroundColor: '#ffffff', flex: 1}}>
         {/*Header*/}
         <MyHeader
@@ -173,6 +173,6 @@ export const HomeScreen = () => {
           {renderCenterContent()}
         </View>
       </View>
-    </TouchableWithoutFeedback>
+    
   );
 };
