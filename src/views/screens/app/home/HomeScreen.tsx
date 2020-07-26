@@ -11,8 +11,10 @@ import {Header, Icon, Input, Slider, Button} from 'react-native-elements';
 import {styles} from './HomeStyles';
 import {Colors, Metrics} from '@shared';
 import {Card, MyHeader} from '@components';
+import {Dots} from '@styles';
 
 import axios from 'axios';
+
 export interface JobsType {
   title: string;
   salary: string;
@@ -130,7 +132,7 @@ export const HomeScreen = () => {
             onValueChange={(value) => setSliderValue(value)}
           />
           <View style={styles.recommendRow}>
-            <Text style={styles.dots}>♦</Text>
+            <Dots>♦</Dots>
             <Text style={{color: Colors.Text.textAcient}}>
               We have 12 work recommend for you
             </Text>

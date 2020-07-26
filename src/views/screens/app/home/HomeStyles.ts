@@ -19,10 +19,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Metrics.spacing.medium,
     paddingTop: Metrics.spacing.medium,
   },
-  dots: {
-    color: Colors.Primary,
-    marginRight: Metrics.spacing.medium,
-  },
+ 
   sliderStyle: {
     marginHorizontal: Metrics.spacing.huge,
     justifyContent: 'center',

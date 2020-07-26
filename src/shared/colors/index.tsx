@@ -9,6 +9,7 @@ const Colors = {
   Text: {
     textPrimary:'#000000',
     textAcient:'#4A4A4A',
+    textSupport:'#9B9B9B'
   },
 };
 

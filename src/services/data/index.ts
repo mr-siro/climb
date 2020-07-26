@@ -12,6 +12,7 @@ const listIntro = [
     ],
     type: 1,
   },
+
   {
     id: '2',
     icon: 'graduation-cap',
@@ -29,28 +30,19 @@ const listIntro = [
     data: [
       {
         idData: '1',
-        position: {
-          dataDropdown: ['Manage', 'Employee'],
-          valueDefault: 'Employee',
-        },
+        valueDefault: 'Employee',
         titleData: 'Hani Software',
         year: '2009',
       },
       {
         idData: '2',
-        position: {
-          dataDropdown: ['Manage', 'Employee'],
-          valueDefault: 'Manage',
-        },
+        valueDefault: 'Manage',
         titleData: 'Gruby Company',
         year: '2010',
       },
       {
         idData: '3',
-        position: {
-          dataDropdown: ['Manage', 'Employee'],
-          valueDefault: 'Manage',
-        },
+        valueDefault: 'Manage',
         titleData: 'Mina Company',
         year: '2017',
       },

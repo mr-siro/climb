@@ -1,117 +1,351 @@
 import React, {useState} from 'react';
-import {View, Text, Image, FlatList, TouchableOpacity} from 'react-native';
-import {Button, Icon} from 'react-native-elements';
-import AsyncStorage from '@react-native-community/async-storage';
-import {useNavigation} from '@react-navigation/native';
-import {AppRoute} from '@navigator';
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  Switch,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import {Button, Icon, Input, Tooltip} from 'react-native-elements';
+
 import ProgressCircle from 'react-native-progress-circle';
 import {MyHeader} from '@components';
 import {styles} from './ProfileStyle';
 import {Images} from '@assets';
 import {Colors, Metrics} from '@shared';
 import {listIntro} from '@services';
+import {SupportText, Dots, Title} from '@styles';
+import Modal from 'react-native-modal';
+import {WrapperList} from './components/wrapper/WrapperList';
+import {IntroProps, AboutItems, Educations, Exeriances} from './Constant';
+import DropDownPicker from 'react-native-dropdown-picker';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
-import {IntroProps} from './IntroProps';
+export enum ModalKey {
+  ABOUT = 'About',
+  EDUCATION = 'Education',
+  EXPERIENCE = 'Experience',
+}
 
 export const ProfileScreen = () => {
-  const [list, setList] = useState(listIntro);
+  const [list, setList] = useState(listIntro),
+    [isModalVisible, setModalVisible] = useState(false),
+    [modalKey, SetModalKey] = useState(''),
+    [deFault, setDeFault] = useState('Manager'),
+    [activeId, setActiveId] = useState(''),
+    [aboutValue, setAboutValue] = useState(''),
+    [nameSchool, setNameSchool] = useState(''),
+    [isEnabled, setIsEnabled] = useState(false),
+    [company, setCompany] = useState(''),
+    [year, setYear] = useState('');
+  const position = [
+    {label: 'Manager', value: 'Manager'},
+    {label: 'Employee', value: 'Employee'},
+  ];
+  const toggleSwitch = () => {
+    setIsEnabled((previousState) => !previousState);
+  };
+
+  // open button +Add
+  const pressButton = (item: IntroProps) => {
+    openEditForm(item.type);
+    item.type == 1
+      ? SetModalKey(ModalKey.ABOUT)
+      : item.type == 2
+      ? SetModalKey(ModalKey.EDUCATION)
+      : SetModalKey(ModalKey.EXPERIENCE);
+    setActiveId(item.id);
+  };
+
+  // open form modal
+  const openEditForm = (type: number) => {
+    const filteredData = list.find((item) => item.type == type);
+
+    if (filteredData) {
+      setModalVisible(!isModalVisible);
+    }
+  };
+
+  // render header Modal
+  const renderHeaderModal = () => (
+    <View style={styles.headerModal}>
+      <Title>
+        {modalKey == ModalKey.ABOUT
+          ? 'About yourself'
+          : modalKey == ModalKey.EDUCATION
+          ? 'Education'
+          : 'Work Experience'}
+      </Title>
+      <Icon
+        color={'#fd1d1d'}
+        type={'font-awesome'}
+        name={'window-close'}
+        onPress={() => setModalVisible(!isModalVisible)}
+      />
+    </View>
+  );
+
+  const onAddAboutForm = (id: string, data: AboutItems) => {
+    const mapData = [...list];
+    const groupItem = mapData.find((item) => item.id === id) as IntroProps;
+    if (groupItem) {
+      groupItem.data.push(data);
+    }
+    setList(mapData);
+  };
+
+  const onAddEducationForm = (id: string, data: Educations) => {
+    const mapData = [...list];
+    const groupItem = mapData.find((item) => item.id === id) as IntroProps;
+    if (groupItem) {
+      groupItem.data.push(data);
+    }
+    setList(mapData);
+  };
+
+  const onAddExperianForm = (id: string, data: Exeriances) => {
+    const mapData = [...list];
+    const groupItem = mapData.find((item) => item.id === id) as IntroProps;
+    if (groupItem) {
+      groupItem.data.push(data);
+    }
+    setList(mapData);
+  };
+
+  // aboutform
+  const renderAboutForm = () => (
+    <View>
+      <Input
+        multiline={true}
+        value={aboutValue}
+        placeholder={'Write something...'}
+        onChangeText={(text) => setAboutValue(text)}
+      />
+      <View style={{alignItems: 'center'}}>
+        <Button
+          title={'Save'}
+          disabled={!aboutValue ? true : false}
+          buttonStyle={{width: 123, height: 45, borderRadius: 30}}
+          onPress={() => {
+            onAddAboutForm(activeId, {
+              idData: Math.random().toString(),
+              titleData: aboutValue,
+            });
+            setAboutValue('');
+            setModalVisible(!isModalVisible);
+          }}
+        />
+      </View>
+    </View>
+  );
+
+  // educationform
+  const renderEducationForm = () => (
+    <View>
+      <View style={{flexDirection: 'row'}}>
+        <Dots>♦</Dots>
+        <Text style={{fontWeight: 'bold'}}>Your school</Text>
+      </View>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={{width: '30%'}}>Name School</Text>
+        <Input
+          value={nameSchool}
+          onChangeText={(text) => setNameSchool(text)}
+          placeholder={'Add your school'}
+          containerStyle={{width: '70%'}}
+        />
+      </View>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <Text>Graduated</Text>
+        <Switch
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
+      </View>
+      <View style={{alignItems: 'center'}}>
+        <Button
+          title={'Save'}
+          disabled={!nameSchool ? true : false}
+          buttonStyle={{width: 123, height: 45, borderRadius: 30}}
+          onPress={() => {
+            onAddEducationForm(activeId, {
+              idData: Math.random().toString(),
+              titleData: nameSchool,
+              isGrad: isEnabled,
+            });
+            setNameSchool('');
+            setModalVisible(!isModalVisible);
+          }}
+        />
+      </View>
+    </View>
+  );
+
+  // Experian form
+  const renderExperianForm = () => (
+    <View>
+      <View style={{flexDirection: 'row', paddingVertical: 12}}>
+        <Dots>♦</Dots>
+        <Text style={{fontWeight: 'bold'}}>Resume</Text>
+      </View>
+      <Text>Don’t have one. Don’t sweat it. We got you.</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={{width: '30%'}}>Company</Text>
+        <Input
+          containerStyle={{width: '70%'}}
+          value={company}
+          onChangeText={(text) => setCompany(text)}
+          placeholder={'Add your company'}
+        />
+      </View>
+
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={{width: '30%'}}>Year</Text>
+        <Input
+          containerStyle={{width: '70%'}}
+          value={year}
+          onChangeText={(text) => setYear(text)}
+          placeholder={'Year'}
+          keyboardType={'number-pad'}
+        />
+      </View>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Text style={{width: '30%'}}>Position:</Text>
+        <DropDownPicker
+          items={position}
+          defaultValue={deFault}
+          containerStyle={{width: '70%', height: 40}}
+          onChangeItem={(item) => setDeFault(item.value)}
+          itemStyle={{
+            justifyContent: 'flex-start',
+            zIndex: 1,
+          }}
+        />
+      </View>
+      <View style={{alignItems: 'center', paddingTop: 12, zIndex: -1}}>
+        <Button
+          title={'Save'}
+          buttonStyle={{width: 123, height: 45, borderRadius: 30}}
+          disabled={!company && !year ? true : false}
+          onPress={() => {
+            onAddExperianForm(activeId, {
+              idData: Math.random().toString(),
+              titleData: company,
+              year: year,
+              valueDefault: deFault,
+            });
+            setCompany('');
+            setYear('');
+            setModalVisible(!isModalVisible);
+          }}
+        />
+      </View>
+    </View>
+  );
+
   const renderItem = (item: IntroProps, index: number) => {
     return (
-      <View
-        style={{
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 3,
-          },
-          shadowOpacity: 0.27,
-          shadowRadius: 4.65,
-          backgroundColor: 'white',
-          elevation: 6,
-          marginBottom: 10,
-          paddingHorizontal: Metrics.spacing.medium,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            borderBottomWidth: 0.5,
-            borderBottomColor: Colors.Gray,
-            paddingVertical: Metrics.spacing.medium,
-          }}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon size={18} name={item.icon} type={'font-awesome'} />
-            <Text
-              style={{
-                fontSize: Metrics.FontSize.large,
-                fontWeight: 'bold',
-                marginLeft: 12,
-              }}>
-              {item.title}
-            </Text>
-          </View>
-
-          <TouchableOpacity>
-            <Text
-              style={{fontSize: Metrics.FontSize.large, color: Colors.Primary}}>
-              + Add
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <WrapperList
+        icon={item.icon}
+        title={item.title}
+        onPress={() => pressButton(item)}>
         <View
           style={{
             flexDirection: 'row',
             paddingVertical: Metrics.spacing.medium,
           }}>
-          <Text style={styles.dots}>♦</Text>
           <View style={{flex: 1}}>
             {item.data.map((x, index) => (
-              <View key={index} style={{flexDirection: 'row', flex:1, backgroundColor:'red'}}>
-                <Text style={{flex:1}}>{x.titleData}</Text>
-                <Text>{x.year}</Text>
+              <View key={index} style={{flexDirection: 'row'}}>
+                <View style={{flex: 1}}>
+                  <View style={{flexDirection: 'row'}}>
+                    <Dots>♦</Dots>
+                    <Tooltip
+                      backgroundColor={Colors.Primary}
+                      popover={
+                        <Icon
+                          color={'#fd1d1d'}
+                          type={'font-awesome'}
+                          name={'trash-o'}
+                          onPress={() => {}}
+                        />
+                      }>
+                      <Text>{x.titleData}</Text>
+                    </Tooltip>
+                  </View>
+
+                  <SupportText style={{marginLeft: Metrics.spacing.extraLarge}}>
+                    {item.type == 3
+                      ? x.valueDefault
+                      : item.type == 2
+                      ? x.isGrad == true
+                        ? 'Graduated'
+                        : 'No Graduation'
+                      : ''}
+                  </SupportText>
+                </View>
+                <SupportText>{x.year}</SupportText>
               </View>
             ))}
           </View>
         </View>
-      </View>
+      </WrapperList>
     );
   };
+
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
-      <MyHeader
-        title={'My Profile'}
-        leftIcon={'menu'}
-        rightIcon={'ios-notifications-outline'}
-        rightIconType={'ionicon'}
-      />
+      <KeyboardAwareScrollView>
+        <MyHeader
+          title={'My Profile'}
+          leftIcon={'menu'}
+          rightIcon={'ios-notifications-outline'}
+          rightIconType={'ionicon'}
+        />
 
-      <View style={styles.container}>
-        <View style={styles.topContent}>
-          <ProgressCircle
-            percent={50}
-            radius={50}
-            borderWidth={4}
-            color="#10C105"
-            shadowColor=""
-            bgColor="#fff">
-            <Image
-              source={Images.AvtDefault}
-              style={{width: 80, height: 80, borderRadius: 150}}
+        <View style={styles.container}>
+          <View style={styles.topContent}>
+            <ProgressCircle
+              percent={50}
+              radius={50}
+              borderWidth={4}
+              color={'#10C105'}
+              shadowColor=""
+              bgColor="#fff">
+              <Image
+                source={Images.AvtDefault}
+                style={{width: 80, height: 80, borderRadius: 150}}
+              />
+            </ProgressCircle>
+            <View style={styles.introduce}>
+              <Text style={styles.name}>Tristana</Text>
+              <Text style={styles.completeIntro}>Complete proflile 50%</Text>
+            </View>
+          </View>
+          <View style={styles.centerContent}>
+            <FlatList
+              data={list}
+              showsVerticalScrollIndicator={false}
+              renderItem={({item, index}) => renderItem(item, index)}
             />
-          </ProgressCircle>
-          <View style={styles.introduce}>
-            <Text style={styles.name}>Tristana</Text>
-            <Text style={styles.completeIntro}>Complete proflile 50%</Text>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <Modal isVisible={isModalVisible}>
+                <View style={styles.modalContainer}>
+                  {renderHeaderModal()}
+                  {modalKey == ModalKey.ABOUT
+                    ? renderAboutForm()
+                    : modalKey == ModalKey.EDUCATION
+                    ? renderEducationForm()
+                    : renderExperianForm()}
+                </View>
+              </Modal>
+            </TouchableWithoutFeedback>
           </View>
         </View>
-        <View style={styles.centerContent}>
-          <FlatList
-            data={list}
-            showsVerticalScrollIndicator={false}
-            renderItem={({item, index}) => renderItem(item, index)}
-          />
-        </View>
-      </View>
+      </KeyboardAwareScrollView>
     </View>
   );
 };
