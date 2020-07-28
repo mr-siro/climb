@@ -8,7 +8,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
-import {Button, Icon, Input, Tooltip} from 'react-native-elements';
+import {Button, Icon, Input} from 'react-native-elements';
 
 import ProgressCircle from 'react-native-progress-circle';
 import {MyHeader} from '@components';
@@ -39,7 +39,8 @@ export const ProfileScreen = () => {
     [nameSchool, setNameSchool] = useState(''),
     [isEnabled, setIsEnabled] = useState(false),
     [company, setCompany] = useState(''),
-    [year, setYear] = useState('');
+    [year, setYear] = useState(''),
+    [formId, setFormId] = useState('');
   const position = [
     {label: 'Manager', value: 'Manager'},
     {label: 'Employee', value: 'Employee'},
@@ -50,7 +51,7 @@ export const ProfileScreen = () => {
 
   // open button +Add
   const pressButton = (item: IntroProps) => {
-    openEditForm(item.type);
+    openAddForm(item.type);
     item.type == 1
       ? SetModalKey(ModalKey.ABOUT)
       : item.type == 2
@@ -60,11 +61,30 @@ export const ProfileScreen = () => {
   };
 
   // open form modal
-  const openEditForm = (type: number) => {
+  const openAddForm = (type: number) => {
     const filteredData = list.find((item) => item.type == type);
 
     if (filteredData) {
       setModalVisible(!isModalVisible);
+    }
+  };
+
+  const deletedTitle = (id: string, idData: string) => {
+    const mapData = [...list];
+    const groupItem = mapData.find((item) => item.id === id) as IntroProps;
+    if (groupItem) {
+      const childItem = groupItem.data.find(
+        (childItem) => childItem.idData === idData,
+      );
+      const indexOf = groupItem.data.indexOf(childItem);
+      if (indexOf !== -1) {
+        groupItem.data.splice(indexOf, 1);
+        setList(mapData);
+      } else {
+        // Da co loi xay ra
+      }
+    } else {
+      // Da co loi xay ra
     }
   };
 
@@ -112,6 +132,51 @@ export const ProfileScreen = () => {
       groupItem.data.push(data);
     }
     setList(mapData);
+  };
+
+  const editAboutform = (id: string, idData: string) => {
+    const mapData = list.find((item) => item.id === id);
+    if (mapData) {
+      const childItem = mapData.data.find(
+        (childItem) => childItem.idData === idData,
+      ) as AboutItems;
+      if (childItem) {
+        setFormId(childItem.idData);
+        setAboutValue(childItem.titleData);
+        setModalVisible(!isModalVisible);
+      }
+    }
+  };
+
+  const editEducationform = (id: string, idData: string) => {
+    const mapData = list.find((item) => item.id === id);
+    if (mapData) {
+      const childItem = mapData.data.find(
+        (childItem) => childItem.idData === idData,
+      ) as Educations;
+      if (childItem) {
+        setFormId(childItem.idData);
+        setNameSchool(childItem.titleData);
+        setIsEnabled(childItem.isGrad);
+        setModalVisible(!isModalVisible);
+      }
+    }
+  };
+
+  const editExperianform = (id: string, idData: string) => {
+    const mapData = list.find((item) => item.id === id);
+    if (mapData) {
+      const childItem = mapData.data.find(
+        (childItem) => childItem.idData === idData,
+      ) as Exeriances;
+      if (childItem) {
+        setFormId(childItem.idData);
+        setCompany(childItem.titleData);
+        setYear(childItem.year);
+        // setDeFault(childItem.valueDefault);
+        setModalVisible(!isModalVisible);
+      }
+    }
   };
 
   // aboutform
@@ -229,7 +294,7 @@ export const ProfileScreen = () => {
         <Button
           title={'Save'}
           buttonStyle={{width: 123, height: 45, borderRadius: 30}}
-          disabled={!company && !year ? true : false}
+          disabled={!company || !year ? true : false}
           onPress={() => {
             onAddExperianForm(activeId, {
               idData: Math.random().toString(),
@@ -263,18 +328,8 @@ export const ProfileScreen = () => {
                 <View style={{flex: 1}}>
                   <View style={{flexDirection: 'row'}}>
                     <Dots>♦</Dots>
-                    <Tooltip
-                      backgroundColor={Colors.Primary}
-                      popover={
-                        <Icon
-                          color={'#fd1d1d'}
-                          type={'font-awesome'}
-                          name={'trash-o'}
-                          onPress={() => {}}
-                        />
-                      }>
-                      <Text>{x.titleData}</Text>
-                    </Tooltip>
+
+                    <Text>{x.titleData}</Text>
                   </View>
 
                   <SupportText style={{marginLeft: Metrics.spacing.extraLarge}}>
@@ -288,6 +343,26 @@ export const ProfileScreen = () => {
                   </SupportText>
                 </View>
                 <SupportText>{x.year}</SupportText>
+                <View style={{flexDirection: 'row', marginLeft: 8}}>
+                  <Icon
+                    color={'#fd1d1d'}
+                    type={'font-awesome'}
+                    name={'trash-o'}
+                    onPress={() => deletedTitle(item.id, x.idData)}
+                  />
+                  <Icon
+                    iconStyle={{paddingLeft: 4}}
+                    color={'#4fb423'}
+                    name={'create'}
+                    onPress={() =>
+                      item.type === 1
+                        ? editAboutform(item.id, x.idData)
+                        : item.type === 2
+                        ? editEducationform(item.id, x.idData)
+                        : editExperianform(item.id, x.idData)
+                    }
+                  />
+                </View>
               </View>
             ))}
           </View>

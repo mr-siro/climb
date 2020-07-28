@@ -4,11 +4,7 @@ export interface IntroProps {
   title: string;
   data: Array<any>;
   type: number;
-  isGrad: boolean;
-  position: string;
-  valueDefault: string;
-  company: string;
-  year: string;
+
 }
 
 export interface AboutItems {
