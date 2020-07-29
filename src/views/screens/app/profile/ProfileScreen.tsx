@@ -7,6 +7,7 @@ import {
   Switch,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert
 } from 'react-native';
 import {Button, Icon, Input} from 'react-native-elements';
 
@@ -51,7 +52,7 @@ export const ProfileScreen = () => {
 
   // open button +Add
   const pressButton = (item: IntroProps) => {
-    openAddForm(item.type);
+    openSelectForm(item.type);
     item.type == 1
       ? SetModalKey(ModalKey.ABOUT)
       : item.type == 2
@@ -60,12 +61,24 @@ export const ProfileScreen = () => {
     setActiveId(item.id);
   };
 
-  // open form modal
-  const openAddForm = (type: number) => {
-    const filteredData = list.find((item) => item.type == type);
+  const resetForm = () => {
+    setAboutValue('');
+    setCompany('');
+    setNameSchool('');
+    setYear('');
+    setFormId('');
+  };
 
+  const toggleForm = () => {
+    resetForm();
+    setModalVisible(!isModalVisible);
+  };
+
+  // open form modal
+  const openSelectForm = (type: number) => {
+    const filteredData = list.find((item) => item.type == type);
     if (filteredData) {
-      setModalVisible(!isModalVisible);
+      toggleForm();
     }
   };
 
@@ -114,6 +127,7 @@ export const ProfileScreen = () => {
       groupItem.data.push(data);
     }
     setList(mapData);
+    toggleForm();
   };
 
   const onAddEducationForm = (id: string, data: Educations) => {
@@ -123,6 +137,7 @@ export const ProfileScreen = () => {
       groupItem.data.push(data);
     }
     setList(mapData);
+    toggleForm();
   };
 
   const onAddExperianForm = (id: string, data: Exeriances) => {
@@ -132,6 +147,7 @@ export const ProfileScreen = () => {
       groupItem.data.push(data);
     }
     setList(mapData);
+    toggleForm();
   };
 
   const editAboutform = (id: string, idData: string) => {
@@ -146,6 +162,22 @@ export const ProfileScreen = () => {
         setModalVisible(!isModalVisible);
       }
     }
+  };
+
+  const handlerEditAbout = (id: string) => {
+    const mapData = [...list];
+    const groupItem = mapData.find((item) => item.id === id) as IntroProps;
+    if (groupItem) {
+      const childItem = groupItem.data.find(
+        (childItem) => childItem.idData === formId,
+      );
+      const indexOf = childItem ? groupItem.data.indexOf(childItem) : -1;
+      if (childItem && indexOf !== -1) {
+        childItem.titleData = aboutValue;
+        setList(mapData);
+      }
+    }
+    toggleForm();
   };
 
   const editEducationform = (id: string, idData: string) => {
@@ -163,6 +195,23 @@ export const ProfileScreen = () => {
     }
   };
 
+  const handlerEditEducaiton = (id: string) => {
+    const mapData = [...list];
+    const groupItem = mapData.find((item) => item.id === id) as IntroProps;
+    if (groupItem) {
+      const childItem = groupItem.data.find(
+        (childItem) => childItem.idData === formId,
+      );
+      const indexOf = childItem ? groupItem.data.indexOf(childItem) : -1;
+      if (childItem && indexOf !== -1) {
+        childItem.titleData = nameSchool;
+        childItem.isGrad = isEnabled;
+        setList(mapData);
+      }
+    }
+    toggleForm();
+  };
+
   const editExperianform = (id: string, idData: string) => {
     const mapData = list.find((item) => item.id === id);
     if (mapData) {
@@ -173,10 +222,27 @@ export const ProfileScreen = () => {
         setFormId(childItem.idData);
         setCompany(childItem.titleData);
         setYear(childItem.year);
-        // setDeFault(childItem.valueDefault);
         setModalVisible(!isModalVisible);
       }
     }
+  };
+
+  const handlerEditExperian = (id: string) => {
+    const mapData = [...list];
+    const groupItem = mapData.find((item) => item.id === id) as IntroProps;
+    if (groupItem) {
+      const childItem = groupItem.data.find(
+        (childItem) => childItem.idData === formId,
+      );
+      const indexOf = childItem ? groupItem.data.indexOf(childItem) : -1;
+      if (childItem && indexOf !== -1) {
+        childItem.titleData = company;
+        childItem.year = year;
+        childItem.valueDefault = deFault;
+        setList(mapData);
+      }
+    }
+    toggleForm();
   };
 
   // aboutform
@@ -193,14 +259,16 @@ export const ProfileScreen = () => {
           title={'Save'}
           disabled={!aboutValue ? true : false}
           buttonStyle={{width: 123, height: 45, borderRadius: 30}}
-          onPress={() => {
-            onAddAboutForm(activeId, {
-              idData: Math.random().toString(),
-              titleData: aboutValue,
-            });
-            setAboutValue('');
-            setModalVisible(!isModalVisible);
-          }}
+          onPress={
+            formId
+              ? () => handlerEditAbout(activeId)
+              : () => {
+                  onAddAboutForm(activeId, {
+                    idData: Math.random().toString(),
+                    titleData: aboutValue,
+                  });
+                }
+          }
         />
       </View>
     </View>
@@ -235,15 +303,17 @@ export const ProfileScreen = () => {
           title={'Save'}
           disabled={!nameSchool ? true : false}
           buttonStyle={{width: 123, height: 45, borderRadius: 30}}
-          onPress={() => {
-            onAddEducationForm(activeId, {
-              idData: Math.random().toString(),
-              titleData: nameSchool,
-              isGrad: isEnabled,
-            });
-            setNameSchool('');
-            setModalVisible(!isModalVisible);
-          }}
+          onPress={
+            formId
+              ? () => handlerEditEducaiton(activeId)
+              : () => {
+                  onAddEducationForm(activeId, {
+                    idData: Math.random().toString(),
+                    titleData: nameSchool,
+                    isGrad: isEnabled,
+                  });
+                }
+          }
         />
       </View>
     </View>
@@ -295,17 +365,18 @@ export const ProfileScreen = () => {
           title={'Save'}
           buttonStyle={{width: 123, height: 45, borderRadius: 30}}
           disabled={!company || !year ? true : false}
-          onPress={() => {
-            onAddExperianForm(activeId, {
-              idData: Math.random().toString(),
-              titleData: company,
-              year: year,
-              valueDefault: deFault,
-            });
-            setCompany('');
-            setYear('');
-            setModalVisible(!isModalVisible);
-          }}
+          onPress={
+            formId
+              ? () => handlerEditExperian(activeId)
+              : () => {
+                  onAddExperianForm(activeId, {
+                    idData: Math.random().toString(),
+                    titleData: company,
+                    year: year,
+                    valueDefault: deFault,
+                  });
+                }
+          }
         />
       </View>
     </View>
@@ -348,19 +419,34 @@ export const ProfileScreen = () => {
                     color={'#fd1d1d'}
                     type={'font-awesome'}
                     name={'trash-o'}
-                    onPress={() => deletedTitle(item.id, x.idData)}
+                    onPress={() => {
+                      Alert.alert(
+                        "Chắc chắn xoá?",
+                        "Xoá đi một kí ức tàn nhẫn thế nào ☹",
+                        [
+                          {
+                            text: "Huỷ",
+                            onPress: () => {},
+                            style: "cancel"
+                          },
+                          { text: "Xoá", onPress: () =>  deletedTitle(item.id, x.idData), style: "destructive" }
+                        ],
+                        { cancelable: false }
+                      );
+                     }}
                   />
                   <Icon
                     iconStyle={{paddingLeft: 4}}
                     color={'#4fb423'}
                     name={'create'}
-                    onPress={() =>
+                    onPress={() => {
+                      pressButton(item);
                       item.type === 1
                         ? editAboutform(item.id, x.idData)
                         : item.type === 2
                         ? editEducationform(item.id, x.idData)
-                        : editExperianform(item.id, x.idData)
-                    }
+                        : editExperianform(item.id, x.idData);
+                    }}
                   />
                 </View>
               </View>
