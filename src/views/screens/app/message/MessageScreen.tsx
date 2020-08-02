@@ -9,55 +9,43 @@ import axios from 'axios';
 
 export const MessageScreen = React.memo(() => {
   const [loading, setLoading] = useState(false),
-    [data, setData] = useState({count: 0, items: []}),
-    [page, setPage] = useState(1),
     [error, setError] = useState(null),
     [refreshing, setRefreshing] = useState(false),
-    [totalCount, setTotalCount] = useState(0),
-    [endOfList, setEndOfList] = useState(false),
-    [sideData, setSideData] = useState(data.items),
+    [sideData, setSideData] = useState([]),
+    [count,setCount] = useState(0),
     [skip, setSkip] = useState(0);
   const take = 5;
 
   useEffect(() => {
-    getData();
-  }, []);
+    if (skip === 0) {
+      getData(true);
+    }
+  }, [skip]);
 
-  const getData = () => {
+  const getData = (isRefresh?: boolean) => {
     const url = `https://apibeta.evp.debugger.vn/api/learner/v1/public/courses?skip=${skip}&take=${take}&query=&categoryId=`;
     axios({
       method: 'get',
       url: url,
     })
       .then((res) => {
-        setSkip(skip + 5);
-        setData(res.data);
-        setSideData(sideData.concat(res.data.items));
-        setLoading(true);
-        console.log(res.data.count);
-        if (skip === res.data.count) {
-          setEndOfList(true);
-        }
+        setSkip(skip + take);
+        setCount(res.data.count)
+        setSideData(
+          isRefresh ? res.data.items : sideData.concat(res.data.items),
+        );
       })
       .catch((error) => setError(error));
   };
 
-  const handleRefresh = () => {
-    setSkip(0);
-    setRefreshing(true);
-    getData();
-  };
-
-  const handleLoadMore = () => {
-    if (!endOfList) {
-      setLoading(true);
+  const handleLoadMore = (count:number) => {
+    setLoading(true);
+    if (skip < count) {
       getData();
     }
-    console.log('skip:', skip);
-    console.log('take:', take);
   };
 
-  const renderFooter = (count: number) => {
+  const renderFooter = () => {
     return skip <= count && loading ? (
       <View>
         <ActivityIndicator animating size={'large'} />
@@ -78,19 +66,22 @@ export const MessageScreen = React.memo(() => {
             ? {uri: item.featuredImageUrl}
             : Images.NoImage
         }
-        imageStyle={{height: 300, width: '100%', resizeMode: 'contain'}}></Card>
+        imageStyle={{height: 300, width: '100%', resizeMode: 'contain'}}>
+        <Text>Price: {item.price}</Text>
+      </Card>
     </View>
   );
+
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <MyHeader title={'Course'} />
       <View style={{flex: 1, paddingVertical: 14}}>
         <FlatList
           data={sideData}
-          ListFooterComponent={() => renderFooter(data.count)}
-          onRefresh={handleRefresh}
+          ListFooterComponent={() => renderFooter()}
+          onRefresh={() => setSkip(0)}
           refreshing={refreshing}
-          onEndReached={handleLoadMore}
+          onEndReached={() => handleLoadMore(count)}
           onEndReachedThreshold={0.5}
           renderItem={({item, index}) => renderItem(item, index)}
         />

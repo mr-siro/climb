@@ -7,6 +7,10 @@ buildscript {
         compileSdkVersion = 29
         targetSdkVersion = 29
         googlePlayServicesAuthVersion = "17.0.0"
+        googlePlayServicesVersion = "17.0.0"
+        googlePlayServicesVisionVersion = "19.0.0"
+        facebookSdkVersion = "6.2.0"
+        playServicesVersion = "17.0.0" 
     }
     repositories {
         google()
@@ -20,7 +24,7 @@ buildscript {
          classpath 'com.android.tools.build:gradle:4.0.0' // <--- use this version or newer
         classpath 'com.google.gms:google-services:4.3.3'
          // Add the Crashlytics Gradle plugin.
-         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.1.1'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
     }
 }
 

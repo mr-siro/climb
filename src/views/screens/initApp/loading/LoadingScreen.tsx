@@ -1,42 +1,58 @@
 import React, {useEffect} from 'react';
-import {View, Text, ActivityIndicator} from 'react-native';
+import {View, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {AppRoute} from '@navigator';
-import AsyncStorage from '@react-native-community/async-storage';
-export const LoadingScreen = () => {
-  const navigation = useNavigation();
+import {connect} from 'react-redux';
+import {UserActions} from '../../../../controllers/actions';
 
+export interface LoadingScreenProps {
+  getUserInfo?: () => Promise<any>;
+  profile?: any;
+}
+
+export const Loading: React.FunctionComponent<LoadingScreenProps> = (
+  props: LoadingScreenProps,
+) => {
+  const navigation = useNavigation()
+  const {getUserInfo} = props;
   useEffect(() => {
-    checkToNavigate();
+    isUserLogin();
   }, []);
-  const checkToNavigate = async () => {
-    (await isLogin()) ? homeNavigate() : authNavigate();
+  const isUserLogin = () => {
+    getUserInfo &&
+      getUserInfo()
+        .then(() => {
+          navigateToHome();
+        })
+        .catch(() => {
+          navigateToLogin();
+        });
   };
-  const homeNavigate = () => {
+  const navigateToHome = () => {
     navigation.navigate(AppRoute.HOME);
   };
-
-  const authNavigate = () => {
+  const navigateToLogin = () => {
     navigation.navigate(AppRoute.AUTH);
   };
-
-  const isLogin = async () => {
-    //Get id from storage. neu co return true nguoc lai returm false
-    const value = await AsyncStorage.getItem('@userName');
-    const ggToken = await AsyncStorage.getItem('@ggToken');
-    const fbToken = await AsyncStorage.getItem('@fbToken');
-    console.log('ggToken is:', ggToken);
-    console.log('value is:', value);
-    console.log('fbToken is:', fbToken);
-    if (value || ggToken || fbToken) {
-      return true;
-    }
-    return false;
-  };
-
   return (
-    <View style={{flex: 1, justifyContent: 'center'}}>
-      <ActivityIndicator size={'large'} />
+    <View>
+      <Text>Loading...</Text>
     </View>
   );
 };
+
+const mapStateToProps = (state: any) => ({
+  profile: state.user.profile,
+});
+
+const mapDispatchToProps = (dispatch: Function) => ({
+  getUserInfo: () =>
+    new Promise((resolve: (user: any) => void, reject) => {
+      dispatch(UserActions.getUserInfo(resolve, reject));
+    }),
+});
+
+export const LoadingScreen = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Loading);
