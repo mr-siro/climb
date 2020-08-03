@@ -6,6 +6,16 @@ const getUserInfo = (resolve: Function, reject: Function) => ({
   reject,
 });
 
+const incrementCount = () => ({
+  type: UserActionTypes.USER_COUNT_INCREMENT,
+});
+
+const decrementCount = () => ({
+  type: UserActionTypes.USER_COUNT_DECREMENT,
+});
+
 export default {
   getUserInfo,
+  incrementCount,
+  decrementCount
 };

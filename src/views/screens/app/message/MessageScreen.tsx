@@ -1,58 +1,58 @@
 import React, {useState, useEffect} from 'react';
-import {View, FlatList, Text, ActivityIndicator, Image} from 'react-native';
+import {View, FlatList, Text, ActivityIndicator, Image, RefreshControl} from 'react-native';
 import {MyHeader} from '@components';
 import {ItemsModel, InstructorModel, CategoriesModel} from './Constant';
 import {Colors, Metrics} from '@shared';
 import {Card} from 'react-native-elements';
 import {Images} from '@assets';
 import axios from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
 
 export const MessageScreen = React.memo(() => {
-  const [loading, setLoading] = useState(false),
-    [error, setError] = useState(null),
-    [refreshing, setRefreshing] = useState(false),
-    [sideData, setSideData] = useState([]),
-    [count,setCount] = useState(0),
-    [skip, setSkip] = useState(0);
+  const [data, setData] = useState([]);
+  const [skip, setSkip] = useState(0);
+  const [isEndOfList, setIsEndOfList] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const take = 5;
-
   useEffect(() => {
     if (skip === 0) {
       getData(true);
     }
   }, [skip]);
-
   const getData = (isRefresh?: boolean) => {
-    const url = `https://apibeta.evp.debugger.vn/api/learner/v1/public/courses?skip=${skip}&take=${take}&query=&categoryId=`;
     axios({
       method: 'get',
-      url: url,
-    })
-      .then((res) => {
-        setSkip(skip + take);
-        setCount(res.data.count)
-        setSideData(
-          isRefresh ? res.data.items : sideData.concat(res.data.items),
-        );
-      })
-      .catch((error) => setError(error));
+      url: `https://apibeta.evp.debugger.vn/api/learner/v1/public/courses?skip=${skip}&take=${take}&query=&categoryId=`,
+    }).then(function (response) {
+      setIsLoading(false);
+      setSkip(skip + take);
+      if (
+        (isRefresh
+          ? response.data.items.length
+          : data.length + response.data.items.length) >= response.data.count
+      ) {
+        setIsEndOfList(true);
+      } else {
+        setIsEndOfList(false);
+      }
+      setData(
+        isRefresh ? response.data.items : data.concat(response.data.items),
+      );
+    });
   };
-
-  const handleLoadMore = (count:number) => {
-    setLoading(true);
-    if (skip < count) {
+  const onEndReached = () => {
+    if (!isEndOfList) {
       getData();
     }
   };
-
-  const renderFooter = () => {
-    return skip <= count && loading ? (
-      <View>
-        <ActivityIndicator animating size={'large'} />
-      </View>
-    ) : null;
+  const onRefresh = () => {
+    setSkip(0);
+    setIsLoading(true);
   };
 
+  const refreshView = () => {
+    return <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />;
+  };
   const renderItem = (item: ItemsModel, index: number) => (
     <View key={`${index}`}>
       <Card
@@ -71,20 +71,19 @@ export const MessageScreen = React.memo(() => {
       </Card>
     </View>
   );
-
+  
+  const couter = useSelector((state:any) => state.user.counter);
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <MyHeader title={'Course'} />
       <View style={{flex: 1, paddingVertical: 14}}>
-        <FlatList
-          data={sideData}
-          ListFooterComponent={() => renderFooter()}
-          onRefresh={() => setSkip(0)}
-          refreshing={refreshing}
-          onEndReached={() => handleLoadMore(count)}
-          onEndReachedThreshold={0.5}
-          renderItem={({item, index}) => renderItem(item, index)}
-        />
+        <Text>{couter}</Text>
+      <FlatList
+        data={data}
+        renderItem={({item,index}) => renderItem(item,index)}
+        onEndReached={() => onEndReached()}
+        refreshControl={refreshView()}
+      />
       </View>
     </View>
   );
