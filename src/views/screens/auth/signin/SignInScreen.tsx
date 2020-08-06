@@ -14,13 +14,11 @@ import {MyInput, FooterComponent} from '@components';
 import {AppRoute, AuthNavigatorParams} from '@navigator';
 import {StackNavigationProp} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-community/async-storage';
-
-import {signInByFacebook} from './facebookSignIn';
 import {CONSTANT} from '@config';
 import {connect} from 'react-redux';
 import {UserActions} from '../../../../controllers/actions';
 import {GoogleSignin, statusCodes} from '@react-native-community/google-signin';
-import {LoginManager, AccessToken} from 'react-native-fbsdk';
+import {LoginManager, AccessToken,GraphRequest,GraphRequestManager} from 'react-native-fbsdk';
 
 export interface SignInProps {
   navigation: StackNavigationProp<AuthNavigatorParams, AppRoute.SIGNIN>;
@@ -50,13 +48,13 @@ export const SignIn = (props: SignInProps) => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      if (userInfo.idToken) {
-        AsyncStorage.setItem(CONSTANT.USER_STORAGE_KEY, userInfo.idToken)
+      if (userInfo.user.id) {
+        AsyncStorage.setItem(CONSTANT.USER_STORAGE_KEY, userInfo.user.id)
           .then(() => {
             getUserInfo &&
               getUserInfo().then(() => {
                 navigation.navigate(AppRoute.HOME);
-                console.log(userInfo.idToken);
+                console.log(userInfo.user.id);
               });
           })
           .catch(() => {
@@ -85,6 +83,10 @@ export const SignIn = (props: SignInProps) => {
         if (result.isCancelled) {
           console.log('Login cancelled');
         } else {
+          console.log(
+            "Login success with permissions: " +
+              result.grantedPermissions.toString()
+          );
           const data = await AccessToken.getCurrentAccessToken();
           const accessToken = data.accessToken.toString();
           if (accessToken) {
@@ -98,6 +100,22 @@ export const SignIn = (props: SignInProps) => {
               .catch(() => {
                 Alert.alert('Error');
               });
+
+             const _responseInfoCallback = (error:any, result:any) => {
+                if (error) {
+                  console.log('Error fetching data: ' + error.toString());
+                } else {
+                  console.log('Result Name: ' + result.name);
+                }
+              }
+
+              const infoRequest = new GraphRequest(
+                '/me?fields=name,picture',
+                null,
+                _responseInfoCallback
+              );
+              // Start the graph request.
+              new GraphRequestManager().addRequest(infoRequest).start();
           }
         }
       },

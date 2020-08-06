@@ -5,3 +5,5 @@ export * from './app/home/HomeScreen';
 export * from './app/message/MessageScreen';
 export * from './app/myWork/MyWorkScreen';
 export * from './initApp/loading/LoadingScreen';
+export * from './app/newScreen/NewScreen';
+export * from './app/newScreen/DetailNewScreen';

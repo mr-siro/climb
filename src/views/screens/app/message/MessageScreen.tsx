@@ -72,12 +72,23 @@ export const MessageScreen = React.memo(() => {
     </View>
   );
   
-  const couter = useSelector((state:any) => state.user.counter);
+  const times = useSelector((state: any) => state.user.counter);
+  
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
       <MyHeader title={'Course'} />
       <View style={{flex: 1, paddingVertical: 14}}>
-        <Text>{couter}</Text>
+      <View
+        style={{
+          borderWidth: 1,
+          borderRadius: 20,
+          justifyContent: 'center',
+          alignSelf:'center',
+          width: 100,
+          height: 100,
+        }}>
+        <Text style={{fontSize: 24, textAlign:'center'}}>{times}</Text>
+      </View>
       <FlatList
         data={data}
         renderItem={({item,index}) => renderItem(item,index)}

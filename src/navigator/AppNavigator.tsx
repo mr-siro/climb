@@ -11,27 +11,36 @@ import {
   MyWorkNavigatorParams,
   MessageNavigatorParams,
   ProfileNavigatorParams,
+  NewScreenNavigatorParams
 } from './AppParamList';
 import {AuthNavigator} from './AuthNavigator';
-import {LoadingScreen} from '@screens';
+import {LoadingScreen,DetailNewScreen} from '@screens';
 
 type StackNavigatorProps = React.ComponentProps<typeof RootStack.Navigator>;
 export type AppNavigatorParams = {
   [AppRoute.MAINSTACK]:undefined;
   [AppRoute.AUTH]: undefined;
   [AppRoute.HOME]: undefined;
+  [AppRoute.DETAILNEWDAIL]:{
+    id:number;
+    title:string;
+    imageUrl:string;
+    short:string;
+  };
 } & HomeNavigatorParams &
   MyWorkNavigatorParams &
   MessageNavigatorParams &
-  ProfileNavigatorParams;
+  ProfileNavigatorParams &
+  NewScreenNavigatorParams;
 
 const RootStack = createStackNavigator<AppNavigatorParams>();
 const MainStack = createStackNavigator();
 
 const MainNavigator = (): React.ReactElement => {
   return (
-    <MainStack.Navigator>
+    <MainStack.Navigator headerMode="none">
       <MainStack.Screen name={AppRoute.LOADING} component={LoadingScreen} />
+      
     </MainStack.Navigator>
   );
 };
@@ -55,6 +64,7 @@ export const AppNavigator = (
           name={AppRoute.HOME}
           component={BottomTabsNavigator}
         />
+        <MainStack.Screen name={AppRoute.DETAILNEWDAIL} component={DetailNewScreen}/>
       </RootStack.Navigator>
     </NavigationContainer>
   );

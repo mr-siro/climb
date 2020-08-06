@@ -9,6 +9,7 @@ import {
   MyWorkNavigatorParams,
   MessageNavigatorParams,
   ProfileNavigatorParams,
+  NewScreenNavigatorParams
 } from './AppParamList';
 import {AppNavigatorParams} from './AppNavigator';
 
@@ -40,3 +41,13 @@ export type ProfileTabNavigationProp = BottomTabNavigationProp<
   BottomTabsNavigatorParams,
   AppRoute.PROFILE
 >;
+
+export type NewScreenNavigationProp = BottomTabNavigationProp<
+  BottomTabsNavigatorParams,
+  AppRoute.NEWSCREEN
+>;
+
+export interface DetailNewScreenProps {
+  navigation: StackNavigationProp<AppNavigatorParams, AppRoute.DETAILNEWDAIL>;
+  route: RouteProp<AppNavigatorParams, AppRoute.DETAILNEWDAIL>;
+}

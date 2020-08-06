@@ -6,13 +6,20 @@ import {
   MyWorkNavigatorParams,
   MessageNavigatorParams,
   ProfileNavigatorParams,
+  NewScreenNavigatorParams,
 } from './AppParamList';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {BottomTabsNavigatorParams} from './AppParamList';
 import {AppRoute} from './AppRoute';
 import {Colors} from '@shared';
-import {HomeScreen, MyWorkScreen, MessageScreen, ProfileScreen} from '@screens';
+import {
+  HomeScreen,
+  MyWorkScreen,
+  MessageScreen,
+  ProfileScreen,
+  NewScreen
+} from '@screens';
 import {Icon} from 'react-native-elements';
 import {Images} from '@assets';
 
@@ -22,6 +29,7 @@ const HomStack = createStackNavigator<HomeNavigatorParams>();
 const MyWorkStack = createStackNavigator<MyWorkNavigatorParams>();
 const MessageStack = createStackNavigator<MessageNavigatorParams>();
 const ProfileStack = createStackNavigator<ProfileNavigatorParams>();
+const NewScreenStack = createStackNavigator<NewScreenNavigatorParams>();
 
 export const HomeNavigator = (): React.ReactElement => {
   return (
@@ -56,6 +64,16 @@ export const ProfileNavigator = (): React.ReactElement => {
       initialRouteName={AppRoute.PROFILE}>
       <ProfileStack.Screen name={AppRoute.PROFILE} component={ProfileScreen} />
     </ProfileStack.Navigator>
+  );
+};
+
+export const NewScreenNavigator = (): React.ReactElement => {
+  return (
+    <NewScreenStack.Navigator
+      headerMode="none"
+      initialRouteName={AppRoute.NEWSCREEN}>
+      <NewScreenStack.Screen name={AppRoute.NEWSCREEN} component={NewScreen} />
+    </NewScreenStack.Navigator>
   );
 };
 
@@ -114,12 +132,17 @@ export const BottomTabsNavigator = (): React.ReactElement => {
           component={ProfileNavigator}
           options={{
             tabBarIcon: ({color, size}) => (
-              <Icon
-                name={'user'}
-                type={'feather'}
-                size={size}
-                color={color}
-              />
+              <Icon name={'user'} type={'feather'} size={size} color={color} />
+            ),
+          }}
+        />
+
+        <BottomTab.Screen
+          name={AppRoute.NEWSCREEN}
+          component={NewScreenNavigator}
+          options={{
+            tabBarIcon: ({color, size}) => (
+              <Icon name={'create'} size={size} color={color} />
             ),
           }}
         />

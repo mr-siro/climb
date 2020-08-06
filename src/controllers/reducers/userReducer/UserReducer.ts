@@ -12,21 +12,19 @@ const profile = (state = null, response: {type: any; profile: any}) => {
   }
 };
 
-const counter = (state = 0, action: any) => {
+const counter = (times = 0, action: any) => {
   switch (action.type) {
-    case UserActionTypes.USER_COUNT_INCREMENT:  
-      return state + 1;
+    case UserActionTypes.USER_COUNT_INCREMENT:
+      return times + action.count;
     case UserActionTypes.USER_COUNT_DECREMENT:
-      if(state == 0){
-        return state = 0
-      }
-      return state - 1;
+      return times - action.count;
+
     default:
-      return state;
+      return times;
   }
 };
 
 export default combineReducers({
   profile,
-  counter
+  counter,
 });

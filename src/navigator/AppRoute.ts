@@ -9,5 +9,7 @@ export enum AppRoute {
   MYWORK = 'My Work',
   MESSAGE = 'Message',
   LOADING = 'Loading',
-  MAINSTACK = 'Main Stack'
+  MAINSTACK = 'Main Stack',
+  NEWSCREEN = 'New Screen',
+  DETAILNEWDAIL = 'Detail New Screen'
 }

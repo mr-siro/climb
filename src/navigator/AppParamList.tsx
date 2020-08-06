@@ -11,6 +11,7 @@ export type BottomTabsNavigatorParams = {
   [AppRoute.MYWORK]: undefined;
   [AppRoute.MESSAGE]: undefined;
   [AppRoute.PROFILE]: undefined;
+  [AppRoute.NEWSCREEN]: undefined;
 };
 
 export type HomeNavigatorParams = {
@@ -27,4 +28,9 @@ export type MessageNavigatorParams = {
 
 export type ProfileNavigatorParams = {
   [AppRoute.PROFILE]: undefined;
+};
+
+export type NewScreenNavigatorParams = {
+  [AppRoute.NEWSCREEN]: undefined;
+  
 };

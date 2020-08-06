@@ -8,14 +8,12 @@ import {CONSTANT} from '@config';
 import {useDispatch, useSelector} from 'react-redux';
 import {connect} from 'react-redux';
 import {UserActions} from '../../../../controllers/actions';
-import {bindActionCreators} from 'redux';
 
-export interface MyWorkProps {
-  incrementCount?: () => void;
-  decrementCount?: () => void;
-}
-export const MyWork = (props: MyWorkProps) => {
-  const {incrementCount, decrementCount} = props
+export const MyWork = () => {
+  
+  const profile = useSelector((state: any) => state.user.profile);
+  const times = useSelector((state: any) => state.user.counter);
+  const dispatch = useDispatch();
 
   const navigation = useNavigation();
 
@@ -45,9 +43,6 @@ export const MyWork = (props: MyWorkProps) => {
     );
   };
 
-  const profile = useSelector((state: any) => state.user.profile);
-  const couter = useSelector((state:any) => state.user.counter);
-
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>
       <View
@@ -68,26 +63,46 @@ export const MyWork = (props: MyWorkProps) => {
           justifyContent: 'space-around',
           flexGrow: 1,
         }}>
-        <Button onPress={() => decrementCount()} title={'-'} />
-        <Button onPress={() => incrementCount()} title={'+'} />
+        <Button
+          onPress={() => dispatch(UserActions.decrementCount(1))}
+          title={'-'}
+        />
+        <Button
+          onPress={() => dispatch(UserActions.incrementCount(1))}
+          title={'+'}
+        />
       </View>
-      <Text style={{textAlign:'center', fontSize:24, paddingBottom:20}}>{couter}</Text>
+      <View
+        style={{
+          borderWidth: 1,
+          borderRadius: 20,
+          justifyContent: 'center',
+          alignSelf: 'center',
+          width: 100,
+          height: 100,
+        }}>
+        <Text style={{fontSize: 24, textAlign: 'center'}}>{times}</Text>
+      </View>
     </View>
   );
 };
 
-const mapStateToProps = (state: any) => ({
-  counter: state.user.counter,
-});
+const mapStateToProps = (state:any) => {
+  return {
+      times: state.counter ? state.counter : 0
+  }
+};
 
-const mapDispatchToProps = (dispatch: Function) => ({
-  decrementCount: () => {
-    dispatch(UserActions.decrementCount());
-  },
-  incrementCount: () => {
-    dispatch(UserActions.incrementCount());
-  },
-});
+const mapDispatchToProps = (dispatch:any) => {
+  return {
+      onDecrement: (count:number) => {
+          dispatch(UserActions.decrementCount(count));
+      },
+      onIncrement: (count:number) => {
+          dispatch(UserActions.incrementCount(count));
+      }
+  };
+}
 
 export const MyWorkScreen = connect(
   mapStateToProps,

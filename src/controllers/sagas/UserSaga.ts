@@ -20,7 +20,7 @@ function* doGetUserInfo(action: any) {
   }
 }
 
-function* getUserInfo() {
+export function* getUserInfo() {
   yield takeLatest(UserActionTypes.GET_USER_PROFILE_REQUEST, doGetUserInfo);
 }
 
